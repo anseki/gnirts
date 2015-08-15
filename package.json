@@ -1,0 +1,32 @@
+{
+  "name": "gnirts",
+  "version": "0.1.0",
+  "title": "gnirts",
+  "description": "Obfuscate the string literal in the JavaScript code.",
+  "keywords": [
+    "mangle",
+    "obfuscate",
+    "obfuscator",
+    "obfuscation",
+    "string",
+    "literal",
+    "security",
+    "password",
+    "secret"
+  ],
+  "main": "./lib/gnirts.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "homepage": "https://github.com/anseki/gnirts",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/anseki/gnirts.git"
+  },
+  "bugs": "https://github.com/anseki/gnirts/issues",
+  "license": "MIT",
+  "author": {
+    "name": "anseki",
+    "url": "https://github.com/anseki"
+  }
+}
