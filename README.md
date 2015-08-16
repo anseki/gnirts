@@ -6,19 +6,20 @@
 Obfuscate the string literal in the JavaScript code.
 
 gnirts mangles the string literal more than hexadecimal escape like `"\x66\x6f\x6f"`.  
-That hexadecimal escape is found out too easily, and it is decoded too easily. That stands out in the code. The stealers get the secret text (e.g. password) easily by pasting that on the console (e.g. Developer Tools of web browser).  
-gnirts might not be able to protect the string from the stealers perfectly, but it force a troublesome work upon them.
+That hexadecimal escape is found out too easily, and it is decoded too easily. That stands out in the code. The stealers get the secret text (e.g. password) easily by pasting that on the console (e.g. Developer Tools of web browser).
+
+gnirts mangles the string literal by using some codes instead of hexadecimal escape. gnirts might not be able to protect the string from the stealers perfectly, but it forces a troublesome work upon them.
 
 For example, a string that should be hidden is here:
 
 ```js
-var password = 'open the sesame';
+var password = 'open sesame';
 ```
 
 Add the directives:
 
 ```js
-var password = /* @mangle */ 'open the sesame' /* @/mangle */;
+var password = /* @mangle */ 'open sesame' /* @/mangle */;
 ```
 
 And then, pass this code to gnirts. The string literal between `/* @mangle */` and `/* @/mangle */` is obfuscated:
@@ -32,7 +33,7 @@ Using no variable is better way.
 For example, check whether an input from user is matched to a string literal:
 
 ```js
-if (userInput === 'open the sesame') {
+if (userInput === 'open sesame') {
   console.log('OK, the door will be opened.');
 }
 ```
@@ -40,7 +41,7 @@ if (userInput === 'open the sesame') {
 Add the directives (Note that all of the condition expression is included in the directive):
 
 ```js
-if (/* @mangle */ userInput === 'open the sesame' /* @/mangle */) {
+if (/* @mangle */ userInput === 'open sesame' /* @/mangle */) {
   console.log('OK, the door will be opened.');
 }
 ```
@@ -70,10 +71,10 @@ obfuscatedCode = gnirts.mangle(sourceCode)
 Parse `sourceCode`, and mangle the codes between the directives `/* @mangle */` and `/* @/mangle */`, and return an obfuscated code.  
 The replaced codes differ depending on the code that is included in the directives:
 
-* The strings literal like `'foo'`, `"foo"` or `'foo' + 'bar'` are replaced to the codes that return an original string.
-* The condition expression like `SOMETHING === 'strings literal'` are replaced to the codes that return a boolean to indicate whether it matches.  
+* The string literals like `'foo'`, `"foo"` or `'foo' + 'bar'` are replaced to the codes that return an original string.
+* The condition expression like `SOMETHING === 'string literal'` are replaced to the codes that return a boolean to indicate whether it matches.  
 `SOMETHING` may be a variable, a reference to a string like `fooObject.barProperty` or a function that returns a string. Note that `SOMETHING` is referenced multiple times (i.e. if that is a function, that is called multiple times).  
-A comparison operator must be `===` or `==`. The strings literal may be `'foo'`, `"foo"` or `'foo' + 'bar'`.
+A comparison operator must be `===` or `==`. The string literal may be `'foo'`, `"foo"` or `'foo' + 'bar'`.
 
 For example:
 
@@ -90,7 +91,7 @@ fs.writeFileSync('dest.js', js);
 `src.js`:
 
 ```js
-if (/* @mangle */ userInput === 'open the sesame' /* @/mangle */) {
+if (/* @mangle */ userInput === 'open sesame' /* @/mangle */) {
   console.log('OK, the door will be opened.');
 }
 ```
