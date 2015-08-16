@@ -108,7 +108,7 @@ password =
 
 The condition expressions like `SOMETHING === 'string literal'` are replaced to the codes that return a boolean to indicate whether it matches.  
 `SOMETHING` may be a variable, a reference to a string like `fooObject.barProperty` or a function that returns a string. Note that `SOMETHING` may be referenced multiple times (i.e. if that is a function, that is called multiple times).  
-A comparison operator must be `===` or `==`.  
+A comparison operator must be `===`, `==`, `!==` or `!=`.  
 The string literal may be `'foo'`, `"foo"` or `'foo' + 'bar'`.
 
 The `&&` and `||` operators that are left side and right side of the condition expression, and the `?` operators that are right side of the condition expression are copied to same position of the replaced code.
