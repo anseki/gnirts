@@ -84,11 +84,17 @@ The comments are ignored.
 ```
 
 The inside codes of the directives are replaced to obfuscated codes.  
-The replaced code differs depending on the inside codes of the directive:
+The replaced code differs depending on the inside code of the directive:
 
 ### String literal
 
 The string literals like `'foo'`, `"foo"` or `'foo' + 'bar'` are replaced to the codes that return an original string.
+
+For example:
+
+```js
+var password = /* @mangle */ 'open sesame' /* @/mangle */;
+```
 
 The `+` operators that are left side and right side of the string literal are copied to same position of the replaced code.
 
@@ -110,6 +116,14 @@ The condition expressions like `SOMETHING === 'string literal'` are replaced to 
 `SOMETHING` may be a variable, a reference to a string like `fooObject.barProperty` or a function that returns a string. Note that `SOMETHING` may be referenced multiple times (i.e. if that is a function, that is called multiple times).  
 A comparison operator must be `===`, `==`, `!==` or `!=`.  
 The string literal may be `'foo'`, `"foo"` or `'foo' + 'bar'`.
+
+For example:
+
+```js
+if (/* @mangle */ userInput === 'open sesame' /* @/mangle */) {
+  console.log('OK, the door will be opened.');
+}
+```
 
 The `&&` and `||` operators that are left side and right side of the condition expression, and the `?` operators that are right side of the condition expression are copied to same position of the replaced code.
 
