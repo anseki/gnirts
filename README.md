@@ -8,7 +8,7 @@ Obfuscate the string literal in the JavaScript code.
 gnirts mangles the string literal more than hexadecimal escape like `"\x66\x6f\x6f"`.  
 That hexadecimal escape is found out too easily, and it is decoded too easily. That stands out in the code. The stealers get the secret text (e.g. password) easily by pasting that on the console (e.g. Developer Tools of web browser).
 
-gnirts mangles the string literal by using some codes instead of hexadecimal escape. gnirts might not be able to protect the string from the stealers perfectly, but it forces a troublesome work upon them.
+gnirts mangles the string literal by using some codes instead of hexadecimal escape. gnirts might not be able to protect the string from the stealers perfectly, but it forces a troublesome work upon them. (See [Note](#note).)
 
 For example, a string that should be hidden is here:
 
@@ -183,3 +183,7 @@ stringCode = gnirts.getCode(stringValue)
 ```
 
 Return a obfuscated code that returns a `stringValue`.
+
+## Note
+
+This mangling is not the cryptography to keep the data secure. It is used to avoid the hacking, the stealing something or the reverse engineering for such as the hybrid applications or the web applications. If your program uses the sensitive informations such as the user's accounts, you should consider the standard secure system such as the cryptography by key pair.
