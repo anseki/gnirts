@@ -2,7 +2,7 @@
   "name": "gnirts",
   "version": "0.4.5",
   "title": "gnirts",
-  "description": "Obfuscate the string literal in the JavaScript code.",
+  "description": "Obfuscate string literals in the JavaScript code.",
   "keywords": [
     "mangle",
     "obfuscate",
