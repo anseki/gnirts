@@ -3,12 +3,12 @@
 * [Grunt](http://gruntjs.com/) plugin: [grunt-gnirts](https://github.com/anseki/grunt-gnirts)
 * [gulp](http://gulpjs.com/) plugin: [gulp-gnirts](https://github.com/anseki/gulp-gnirts)
 
-Obfuscate string literals in the JavaScript code.
+Obfuscate string literals in JavaScript code.
 
 gnirts mangles string literals more than hexadecimal escape like `"\x66\x6f\x6f"`.  
-That hexadecimal escape is found out too easily, and it is decoded too easily. That stands out in the code. The stealers get the secret text (e.g. password) easily by pasting that on the console (e.g. Developer Tools of web browser).
+String literals that were escaped by the hexadecimal escape can be found out too easily, and those can be decoded too easily. Those stand out in the code. Stealers can get secret text (e.g. password) easily by pasting that on a console (e.g. Developer Tools of web browser).
 
-gnirts mangles string literals by using some codes instead of hexadecimal escape. gnirts might not be able to protect the string from the stealers perfectly, but it forces a troublesome work upon them. (See [Note](#note).)
+gnirts mangles string literals by using some codes instead of hexadecimal escape. gnirts might not be able to protect the string from stealers perfectly, but it forces a troublesome work upon them. (See [Note](#note).)
 
 For example, a string that should be hidden is here:
 
