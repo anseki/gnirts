@@ -1,5 +1,7 @@
 # gnirts
 
+[![npm](https://img.shields.io/npm/v/gnirts.svg)](https://www.npmjs.com/package/gnirts) [![GitHub issues](https://img.shields.io/github/issues/anseki/gnirts.svg)](https://github.com/anseki/gnirts/issues) [![dependencies](https://img.shields.io/badge/dependencies-No%20dependency-brightgreen.svg)](package.json) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE-MIT)
+
 * [Grunt](http://gruntjs.com/) plugin: [grunt-gnirts](https://github.com/anseki/grunt-gnirts)
 * [gulp](http://gulpjs.com/) plugin: [gulp-gnirts](https://github.com/anseki/gulp-gnirts)
 
