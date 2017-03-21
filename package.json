@@ -18,6 +18,16 @@
   "engines": {
     "node": ">= 0.8.0"
   },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "sinon": "^2.0.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "cover": "istanbul cover node_modules/mocha/bin/_mocha"
+  },
   "homepage": "https://github.com/anseki/gnirts",
   "repository": {
     "type": "git",
