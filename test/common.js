@@ -5,6 +5,15 @@ const sinon = require('sinon'),
 
 let tryR36 = false;
 
+exports.testCases = [
+  {value: 'a', title: 'length: 1'},
+  {value: 'ab', title: 'length: 2'},
+  {value: 'abcdefghijklmnopqrstuvwxyz0123456789', title: 'length: 36'},
+  {value: '\u4F60\u597D\u3053\u3093\u306B\u3061\u306F', title: 'Non-Ascii'},
+  {value: '\x00\x09\x0a\x0d \x7f()$\'"\t', title: 'symbol and meta'},
+  {value: '\u4F60\u597D\u3053\u3093\u306B\u3061\u306Fabc\x00\x09\x0a\x0d \x7f()$\'"\t123', title: 'mixed'}
+];
+
 exports.RE_CHARCODE = '\\(function\\(\\)\\{var \\w+=Array\\.prototype\\.slice\\.call\\(arguments\\),' +
   '\\w+=\\w+\\.shift\\(\\);return \\w+\\.reverse\\(\\)\\.map\\(function\\(\\w+,\\w+\\)' +
   '\\{return String\\.fromCharCode\\(\\w+-\\w+-\\w+-\\w+\\)\\}\\)\\.join\\(\'\'\\)\\}\\)\\([^\\)]+\\)';

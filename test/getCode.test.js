@@ -10,7 +10,25 @@ describe('getCode() --> getCode4string()', () => {
     expect(gnirts.getCode('')).to.equal("''");
   });
 
+  common.testCases.forEach(testCase => {
+    [0, 0.99].forEach(caseRandom => {
+      it(`should cover ${testCase.title}, random: ${caseRandom}`, () => {
+        common.random.returns(caseRandom);
+        const code = gnirts.getCode(testCase.value);
+        expect(code).to.not.equal(testCase.value);
+        expect(common.code2str(code)).to.equal(testCase.value);
+        common.random.reset();
+      });
+    });
+  });
+
   it('should split the string and convert each part, length: 1', () => {
+    // Fix state of common#tryR36
+    common.random.returns(0);
+    if (!(new RegExp(`^${common.getPattern4string()}$`)).test(gnirts.getCode('a'))) {
+      common.getPattern4string(); // Toggle
+    }
+
     const str = 'abc';
     common.random.returns(0); // Make length of part be 1
 

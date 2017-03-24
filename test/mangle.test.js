@@ -4,6 +4,11 @@ const expect = require('chai').expect,
   common = require('./common'),
   gnirts = require('../lib/gnirts');
 
+function escapeMeta(text) {
+  return text.replace(/[\x00-\x7f]/g, // eslint-disable-line no-control-regex
+    function(s) { return '\\x' + ('00' + s.charCodeAt().toString(16)).substr(-2); });
+}
+
 describe('mangle()', () => {
 
   describe('directive pattern', () => {
@@ -71,7 +76,7 @@ describe('mangle()', () => {
 
     it('should get simple literal', () => {
       const val = 'foo',
-        str = `v1 = /* @mangle */ "${val}" /* @/mangle */;`;
+        str = `v1 = /* @mangle */ '${val}' /* @/mangle */;`;
       common.random.returns(0.99); // Make length of part be 2
 
       const code = gnirts.mangle(str);
@@ -86,7 +91,7 @@ describe('mangle()', () => {
 
     it('should copy `+`', () => {
       const val = 'foo',
-        str = `v1 = v2 /* @mangle */ + "${val}"+/* @/mangle */v3;`;
+        str = `v1 = v2 /* @mangle */ + '${val}'+/* @/mangle */v3;`;
       common.random.returns(0.99); // Make length of part be 2
 
       const code = gnirts.mangle(str);
@@ -117,9 +122,29 @@ describe('mangle()', () => {
         expect(code).to.equal('!(v1===\'\')');
       });
 
+      common.testCases.forEach(testCase => {
+        [0, 0.99].forEach(caseRandom => {
+          it(`should cover ${testCase.title}, random: ${caseRandom}`, () => {
+            common.random.returns(caseRandom);
+            const str = `/* @mangle */ v1 === '${escapeMeta(testCase.value)}'/* @/mangle */`,
+              code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapeMeta(testCase.value)}';return ${code};})()`)).to.be.true;
+            common.random.reset();
+          });
+        });
+      });
+
       it('should split the string and compare each part, length: 1', () => {
+        // Fix state of common#tryR36
+        common.random.returns(0);
+        if (!(new RegExp(`^${common.getPattern4string()}$`)).test(gnirts.getCode('a'))) {
+          common.getPattern4string(); // Toggle
+        }
+
         const val = 'abc',
-          str = `/* @mangle */ v1 === "${val}"/* @/mangle */`;
+          str = `/* @mangle */ v1 === '${val}'/* @/mangle */`;
         common.random.returns(0); // Make length of part be 1
 
         const code = gnirts.mangle(str),
