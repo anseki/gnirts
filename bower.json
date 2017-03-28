@@ -1,6 +1,6 @@
 {
   "name": "gnirts",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Obfuscate the string literal in the JavaScript code.",
   "keywords": [
     "mangle",
