@@ -4,8 +4,8 @@ const expect = require('chai').expect,
   common = require('./common'),
   gnirts = require('../lib/gnirts');
 
-function escapeMeta(text) {
-  return text.replace(/[\x00-\x7f]/g, // eslint-disable-line no-control-regex
+function escapePattern(pattern) {
+  return pattern.replace(/[\x00-\x7f]/g, // eslint-disable-line no-control-regex
     function(s) { return '\\x' + ('00' + s.charCodeAt().toString(16)).substr(-2); });
 }
 
@@ -70,6 +70,150 @@ describe('mangle()', () => {
       expect(code).to.equal("''");
     });
 
+    describe('copied conjunctions', () => {
+
+      describe('in the literal', () => {
+
+        ['(', ')', '+', ',', ':', ';', '=', '?', '[', ']', '{', '}'].forEach(cnj => {
+
+          it(`should copy \`${cnj}\` at the left`, () => {
+            const val = 'foo',
+              str = `v1 = /* @mangle */${cnj}'${val}'/* @/mangle */;`;
+            common.random.returns(0.99); // Make length of part be 2
+
+            const code = gnirts.mangle(str),
+              escCnj = escapePattern(cnj);
+            // 3 part
+            expect((new RegExp(`^v1 = ${escCnj}${common.getPattern4string()}\\+` +
+                `${common.getPattern4string()}\\+${common.getPattern4string()};$`))
+              .test(code)).to.be.true;
+            expect(common.code2str(
+              code.replace(new RegExp(`^v1 = ${escCnj}(.+);$`), '$1'))).to.equal(val);
+
+            common.random.reset();
+          });
+
+          it(`should copy \`${cnj}\` at the left with space`, () => {
+            const val = 'foo',
+              str = `v1 = /* @mangle */ ${cnj}'${val}'/* @/mangle */;`;
+            common.random.returns(0.99); // Make length of part be 2
+
+            const code = gnirts.mangle(str),
+              escCnj = escapePattern(cnj);
+            // 3 part
+            expect((new RegExp(`^v1 = ${escCnj}${common.getPattern4string()}\\+` +
+                `${common.getPattern4string()}\\+${common.getPattern4string()};$`))
+              .test(code)).to.be.true;
+            expect(common.code2str(
+              code.replace(new RegExp(`^v1 = ${escCnj}(.+);$`), '$1'))).to.equal(val);
+
+            common.random.reset();
+          });
+
+          it(`should copy \`${cnj}\` at the both sides with spaces`, () => {
+            const val = 'foo',
+              str = `v1 = /* @mangle */ ${cnj}  '${val}'  ${cnj}   /* @/mangle */;`;
+            common.random.returns(0.99); // Make length of part be 2
+
+            const code = gnirts.mangle(str),
+              escCnj = escapePattern(cnj);
+            // 3 part
+            expect((new RegExp(`^v1 = ${escCnj}${common.getPattern4string()}\\+` +
+                `${common.getPattern4string()}\\+${common.getPattern4string()}${escCnj};$`))
+              .test(code)).to.be.true;
+            expect(common.code2str(
+              code.replace(new RegExp(`^v1 = ${escCnj}(.+)${escCnj};$`), '$1'))).to.equal(val);
+
+            common.random.reset();
+          });
+
+        });
+
+        it('should deny \`$\`', () => {
+          const str = 'v1 = /* @mangle */ $ \'foo\' /* @/mangle */;';
+          expect(() => { gnirts.mangle(str); }).to.throw('Invalid directive: $ \'foo\'');
+        });
+
+        it('should deny \`$\` with accepted one', () => {
+          const str = 'v1 = /* @mangle */ + \'foo\' $ /* @/mangle */;';
+          expect(() => { gnirts.mangle(str); }).to.throw('Invalid directive: + \'foo\' $');
+        });
+
+      });
+
+      describe('in the match', () => {
+
+        ['&&', '||', '(', ')', ',', ':', ';', '=', '?', '[', ']', '{', '}'].forEach(cnj => {
+
+          it(`should copy \`${cnj}\` at the left`, () => {
+            const val = 'foo',
+              str = `if (/* @mangle */${cnj}v1 === '${val}'/* @/mangle */) {}`;
+            common.random.returns(0.99); // Make length of part be 2
+
+            const code = gnirts.mangle(str),
+              escCnj = escapePattern(cnj);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapePattern(val)}';return ${
+                code.replace(new RegExp(`^if \\(${escCnj}(.+)\\) \\{\\}`), '$1')};})()`)).to.be.true;
+
+            common.random.reset();
+          });
+
+          it(`should copy \`${cnj}\` at the left with space`, () => {
+            const val = 'foo',
+              str = `if (/* @mangle */ ${cnj}v1 === '${val}'/* @/mangle */) {}`;
+            common.random.returns(0.99); // Make length of part be 2
+
+            const code = gnirts.mangle(str),
+              escCnj = escapePattern(cnj);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapePattern(val)}';return ${
+                code.replace(new RegExp(`^if \\(${escCnj}(.+)\\) \\{\\}`), '$1')};})()`)).to.be.true;
+
+            common.random.reset();
+          });
+
+          it(`should copy \`${cnj}\` at the both sides with spaces`, () => {
+            const val = 'foo',
+              str = `if (/* @mangle */ ${cnj}  v1 === '${val}'  ${cnj}   /* @/mangle */) {}`;
+            common.random.returns(0.99); // Make length of part be 2
+
+            const code = gnirts.mangle(str),
+              escCnj = escapePattern(cnj);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapePattern(val)}';return ${
+                code.replace(new RegExp(`^if \\(${escCnj}(.+)${escCnj}\\) \\{\\}`), '$1')};})()`)).to.be.true;
+
+            common.random.reset();
+          });
+
+        });
+
+        it('should accept unknown string at the left as target', () => {
+          const val = 'foo', val2 = 16,
+            str = `if (/* @mangle */${val2}+v1 === '${val2}${val}'/* @/mangle */) {}`;
+          common.random.returns(0.99); // Make length of part be 2
+
+          const code = gnirts.mangle(str);
+          expect(code).to.not.equal(str);
+          expect(common.code2str(
+            `(()=>{var v1='${escapePattern(val)}';return ${
+              code.replace(/^if \((.+)\) \{\}/, '$1')};})()`)).to.be.true;
+
+          common.random.reset();
+        });
+
+        it('should deny \`$\` with accepted one', () => {
+          const str = 'if (/* @mangle */ + v1 === \'foo\' $ /* @/mangle */) {}';
+          expect(() => { gnirts.mangle(str); }).to.throw('Invalid directive: + v1 === \'foo\' $');
+        });
+
+      });
+
+    });
   });
 
   describe('case of the literal', () => {
@@ -85,21 +229,6 @@ describe('mangle()', () => {
           `${common.getPattern4string()}\\+${common.getPattern4string()};$`))
         .test(code)).to.be.true;
       expect(common.code2str(code.replace(/^v1 =/, ''))).to.equal(val);
-
-      common.random.reset();
-    });
-
-    it('should copy `+`', () => {
-      const val = 'foo',
-        str = `v1 = v2 /* @mangle */ + '${val}'+/* @/mangle */v3;`;
-      common.random.returns(0.99); // Make length of part be 2
-
-      const code = gnirts.mangle(str);
-      // 3 part
-      expect((new RegExp(`^v1 = v2 \\+${common.getPattern4string()}\\+` +
-          `${common.getPattern4string()}\\+${common.getPattern4string()}\\+v3;$`))
-        .test(code)).to.be.true;
-      expect(common.code2str(code.replace(/^v1 = v2 \+(.+)\+v3;$/, '$1'))).to.equal(val);
 
       common.random.reset();
     });
@@ -126,11 +255,11 @@ describe('mangle()', () => {
         [0, 0.99].forEach(caseRandom => {
           it(`should cover ${testCase.title}, random: ${caseRandom}`, () => {
             common.random.returns(caseRandom);
-            const str = `/* @mangle */ v1 === '${escapeMeta(testCase.value)}'/* @/mangle */`,
+            const str = `/* @mangle */ v1 === '${escapePattern(testCase.value)}'/* @/mangle */`,
               code = gnirts.mangle(str);
             expect(code).to.not.equal(str);
             expect(common.code2str(
-              `(()=>{var v1='${escapeMeta(testCase.value)}';return ${code};})()`)).to.be.true;
+              `(()=>{var v1='${escapePattern(testCase.value)}';return ${code};})()`)).to.be.true;
             common.random.reset();
           });
         });

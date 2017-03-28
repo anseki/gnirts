@@ -27,11 +27,20 @@ var password = /* @mangle */ 'open sesame' /* @/mangle */;
 And then, pass this code to gnirts. The string literal between `/* @mangle */` and `/* @/mangle */` is obfuscated:
 
 ```js
-var password = (function(){var m=Array.prototype.slice.call(arguments),i=m.shift();return m.reverse().map(function(j,a){return String.fromCharCode(j-i-55-a)}).join('')})(32,190,200,198)+(23).toString(36).toLowerCase()+(16).toString(36).toLowerCase().split('').map(function(Q){return String.fromCharCode(Q.charCodeAt()+(-71))}).join('')+(1022).toString(36).toLowerCase()+(function(){var m=Array.prototype.slice.call(arguments),Q=m.shift();return m.reverse().map(function(N,c){return String.fromCharCode(N-Q-16-c)}).join('')})(8,135,122,139)+(14).toString(36).toLowerCase();
+var password = (function(){var v=Array.prototype.slice.call(arguments),V=v.
+shift();return v.reverse().map(function(U,o){return String.fromCharCode(U-V-0-o)
+}).join('')})(6,119,117)+(527).toString(36).toLowerCase()+(function(){var N=
+Array.prototype.slice.call(arguments),O=N.shift();return N.reverse().map(
+function(R,T){return String.fromCharCode(R-O-41-T)}).join('')})(36,193,109)+(532
+).toString(36).toLowerCase()+(function(){var R=Array.prototype.slice.call(
+arguments),E=R.shift();return R.reverse().map(function(g,v){return String.
+fromCharCode(g-E-62-v)}).join('')})(52,224,211)+(14).toString(36).toLowerCase();
 ```
 
-But an above code is no good because a `password` variable can be shown by the debugger (e.g. Developer Tools of web browser).  
-Using no variable is better way. And gnirts supports the checking that the string matches.  
+(For this document, line-breaks were added to the code above.)
+
+However, the code above is no good because the `password` variable can be shown by the debugger (e.g. Developer Tools of web browser).  
+Therefore, using no variable is better way. And gnirts supports the checking that the string matches.  
 For example, check whether an input from user is matched to a string literal:
 
 ```js
@@ -51,26 +60,41 @@ if (/* @mangle */ userInput === 'open sesame' /* @/mangle */) {
 And then, pass this code to gnirts. The condition expression between `/* @mangle */` and `/* @/mangle */` is obfuscated:
 
 ```js
-if ((userInput).indexOf((function(){var l=Array.prototype.slice.call(arguments),O=l.shift();return l.reverse().map(function(P,g){return String.fromCharCode(P-O-3-g)}).join('')})(1,105),10)===10&&(new RegExp('^[\\s\\S]{9}'+(22).toString(36).toLowerCase())).test(userInput)&&(userInput).indexOf((function(){var J=Array.prototype.slice.call(arguments),z=J.shift();return J.reverse().map(function(H,d){return String.fromCharCode(H-z-47-d)}).join('')})(1,148,165,150,163),5)===5&&(new RegExp('^[\\s\\S]{2}'+(527).toString(36).toLowerCase()+(18).toString(36).toLowerCase().split('').map(function(w){return String.fromCharCode(w.charCodeAt()+(-13))}).join('')+(42840).toString(36).toLowerCase())).test(userInput)&&(userInput).indexOf((function(){var H=Array.prototype.slice.call(arguments),Y=H.shift();return H.reverse().map(function(u,U){return String.fromCharCode(u-Y-12-U)}).join('')})(59,184,182),0)===0) {
+if ((userInput).indexOf((function(){var f=Array.prototype.slice.call(arguments),
+L=f.shift();return f.reverse().map(function(U,d){return String.fromCharCode(U-L-
+54-d)}).join('')})(43,200,207,194),8)===8&&(new RegExp('^[^]{5}'+(18).toString(
+36).toLowerCase().split('').map(function(p){return String.fromCharCode(p.
+charCodeAt()+(-13))}).join('')+(43023).toString(36).toLowerCase()+(18).toString(
+36).toLowerCase().split('').map(function(u){return String.fromCharCode(u.
+charCodeAt()+(-13))}).join('')+(42989).toString(36).toLowerCase()+(18).toString(
+36).toLowerCase().split('').map(function(S){return String.fromCharCode(S.
+charCodeAt()+(-13))}).join('')+(43023).toString(36).toLowerCase())).test(
+userInput)&&(userInput).indexOf((function(){var I=Array.prototype.slice.call(
+arguments),s=I.shift();return I.reverse().map(function(E,t){return String.
+fromCharCode(E-s-8-t)}).join('')})(38,82,159,149,159,157),0)===0) {
   console.log('OK, the door will be opened.');
 }
 ```
+
+(For this document, line-breaks were added to the code above.)
 
 ## Directive
 
 2 styles of the directive are supported:
 
 ```js
-/* @mangle */ 'string literal' /* @/mangle */
+/* @mangle */ TARGET_CODE /* @/mangle */
 ```
 
 ```js
 // @mangle
-'string literal'
+TARGET_CODE
 // @/mangle
 ```
 
-The comments are ignored.
+`TARGET_CODE`s are string literal or condition expression.
+
+The comments in the target code are ignored.
 
 ```js
 /* @mangle */ 'open' + /* Color: */' black' + ' sesame' /* @/mangle */
@@ -85,7 +109,7 @@ The comments are ignored.
 // @/mangle
 ```
 
-The inside codes of the directives are replaced to obfuscated codes.  
+The target code in the directive are replaced to obfuscated codes.  
 The replaced code differs depending on the inside code of the directive:
 
 ### String literal
@@ -98,7 +122,9 @@ For example:
 var password = /* @mangle */ 'open sesame' /* @/mangle */;
 ```
 
-The `+` operators that are left side and right side of the string literal are copied to same position of the replaced code.
+The following strings at the left side and the right side of the string literal are copied to the same position of the replaced code:
+
+- `(`, `)`, `+`, `,`, `:`, `;`, `=`, `?`, `[`, `]`, `{`, `}`
 
 For example:
 
@@ -110,6 +136,16 @@ password =
   ' sesame' + // <- This `+` is copied.
   // @/mangle
   ' street';
+```
+
+```js
+data = {
+  password:
+    // @mangle
+    'open sesame', // <- This `,` is copied.
+    // @/mangle
+  userName: 'Ali Baba'
+};
 ```
 
 ### Condition expression
@@ -127,7 +163,9 @@ if (/* @mangle */ userInput === 'open sesame' /* @/mangle */) {
 }
 ```
 
-The `&&` and `||` operators that are left side and right side of the condition expression, and the `?` operators that are right side of the condition expression are copied to same position of the replaced code.
+The following strings at the left side and the right side of the condition expression are copied to the same position of the replaced code:
+
+- `&&`, `||`, `(`, `)`, `,`, `:`, `;`, `=`, `?`, `[`, `]`, `{`, `}`
 
 For example:
 
