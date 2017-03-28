@@ -4,6 +4,7 @@
 
 * [Grunt](http://gruntjs.com/) plugin: [grunt-gnirts](https://github.com/anseki/grunt-gnirts)
 * [gulp](http://gulpjs.com/) plugin: [gulp-gnirts](https://github.com/anseki/gulp-gnirts)
+* [webpack](https://webpack.js.org/) loader: [gnirts-loader](https://github.com/anseki/gnirts-loader)
 
 Obfuscate string literals in JavaScript code.
 
