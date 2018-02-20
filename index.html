@@ -1,0 +1,35 @@
+<html>
+  <head>
+    <title>gnirts - Obfuscate string literals in JavaScript code</title>
+    <script>
+      var exports = {}
+
+      window.addEventListener('load', function () {
+        var input = document.getElementById('input')
+        var output = document.getElementById('output')
+        var obfuscate = document.getElementById('obfuscate')
+
+        obfuscate.addEventListener('click', function () {
+          output.innerText = exports.getCode(input.value)
+        })
+      })
+    </script>
+    <script src="lib/gnirts.js"></script>
+    <style>
+      textarea {
+        width: 100%;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <span>Enter text to obfuscate:</span><br/>
+      <textarea id="input"></textarea><br/>
+      <button id="obfuscate">Obfuscate</button>
+    </div>
+    <div>
+      <textarea id="output" disabled></textarea>
+    </div>
+  </body>
+</html>
