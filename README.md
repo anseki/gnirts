@@ -8,6 +8,8 @@
 
 Obfuscate string literals in JavaScript code.
 
+**<a href="https://anseki.github.io/gnirts/">Online Demonstration https://anseki.github.io/gnirts/</a>**
+
 gnirts mangles string literals more than hexadecimal escape like `"\x66\x6f\x6f"`.  
 String literals that were escaped by the hexadecimal escape can be found out too easily, and those can be decoded too easily. Those stand out in the code. Stealers can get secret text (e.g. password) easily by pasting that on a console (e.g. Developer Tools of web browser).
 
