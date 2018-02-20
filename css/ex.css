@@ -1,0 +1,30 @@
+/* line 8, ex.scss */
+#ex-010 p {
+  text-align: center;
+}
+/* line 10, ex.scss */
+#ex-010 p:first-of-type {
+  font-weight: bold;
+}
+/* line 13, ex.scss */
+#ex-010 textarea {
+  width: 360px;
+  height: 240px;
+  white-space: pre-line;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+/* line 22, ex.scss */
+#ex-010 span {
+  display: inline-block;
+  vertical-align: middle;
+}
+/* line 26, ex.scss */
+#ex-010 span:first-of-type::after {
+  content: "";
+  display: inline-block;
+  width: 64px;
+  height: 240px;
+  background: url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2256%22%20height%3D%22216%22%3E%3Cpath%20d%3D%22M0%2C0L56%2C108L0%2C216z%22%20fill%3D%22%23338dbf%22%2F%3E%3C%2Fsvg%3E") center no-repeat;
+}

@@ -1,35 +1,61 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <title>gnirts - Obfuscate string literals in JavaScript code</title>
-    <script>
-      var exports = {}
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Obfuscate string literals in JavaScript code.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/syntax.css">
+  <link rel="stylesheet" href="css/default.css">
+  <link rel="stylesheet" href="css/ex.css">
 
-      window.addEventListener('load', function () {
-        var input = document.getElementById('input')
-        var output = document.getElementById('output')
-        var obfuscate = document.getElementById('obfuscate')
+  <title>gnirts</title>
+</head>
+<body>
+  <header>
+    <h1><a href="./">gnirts</a></h1>
+    <ul id="gh"><li><a href="https://github.com/anseki/gnirts/tarball/master">Download TAR.GZ</a></li><li><a href="https://github.com/anseki/gnirts/zipball/master">Download ZIP</a></li><li><a href="https://github.com/anseki/gnirts">View on GitHub</a></li></ul>
+  </header>
+  <main>
 
-        obfuscate.addEventListener('click', function () {
-          output.innerText = exports.getCode(input.value)
-        })
-      })
-    </script>
-    <script src="lib/gnirts.js"></script>
-    <style>
-      textarea {
-        width: 100%;
-        height: 200px;
-      }
-    </style>
-  </head>
-  <body>
-    <div>
-      <span>Enter text to obfuscate:</span><br/>
-      <textarea id="input"></textarea><br/>
-      <button id="obfuscate">Obfuscate</button>
-    </div>
-    <div>
-      <textarea id="output" disabled></textarea>
-    </div>
-  </body>
+<p>Obfuscate string literals in JavaScript code.</p>
+
+<!-- include "ex-010.html" -->
+<!-- ================ ex -->
+<div id="ex-010">
+  <p>Input text in left box, and click "Obfuscate" button.</p>
+  <span><textarea id="input">Input text here.</textarea></span>
+  <span><textarea id="output" readonly></textarea></span>
+  <p><button id="obfuscate">Obfuscate</button></p>
+</div>
+<p>The text is obfuscated with disgusting dirty JavaScript code.</p>
+<p><a href="https://github.com/anseki/gnirts"><strong>More information</strong></a></p>
+
+<script>
+var exports = {};
+window.addEventListener('load', function() {
+  'use strict';
+
+  var elmInput = document.getElementById('input'),
+    elmOutput = document.getElementById('output');
+
+  function getCode() {
+    elmOutput.value = exports.getCode(elmInput.value);
+  }
+
+  document.getElementById('obfuscate').addEventListener('click', getCode);
+  getCode();
+});
+</script>
+<script src="js/gnirts.js"></script>
+<!-- ================ /ex -->
+<!-- /include "ex-010.html" -->
+
+  </main>
+  <footer>
+    <p class="copyright">gnirts maintained by <a href="https://github.com/anseki">anseki</a></p>
+  </footer>
+
+</body>
 </html>
