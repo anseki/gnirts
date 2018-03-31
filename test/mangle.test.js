@@ -6,13 +6,14 @@ const expect = require('chai').expect,
 
 function escapePattern(pattern) {
   return pattern.replace(/[\x00-\x7f]/g, // eslint-disable-line no-control-regex
-    function(s) { return '\\x' + ('00' + s.charCodeAt().toString(16)).substr(-2); });
+    s => '\\x' + ('00' + s.charCodeAt().toString(16)).substr(-2));
 }
 
 describe('mangle()', () => {
 
   describe('directive pattern', () => {
-    const LF = '\x0A', CRLF = '\x0D\x0A';
+    const LF = '\x0A',
+      CRLF = '\x0D\x0A';
 
     it('should catch `/* @mangle */ ... /* @/mangle */`', () => {
       const str = '/* @mangle */ "" /* @/mangle */',
@@ -129,12 +130,12 @@ describe('mangle()', () => {
 
         });
 
-        it('should deny \`$\`', () => {
+        it('should deny `$`', () => {
           const str = 'v1 = /* @mangle */ $ \'foo\' /* @/mangle */;';
           expect(() => { gnirts.mangle(str); }).to.throw('Invalid directive: $ \'foo\'');
         });
 
-        it('should deny \`$\` with accepted one', () => {
+        it('should deny `$` with accepted one', () => {
           const str = 'v1 = /* @mangle */ + \'foo\' $ /* @/mangle */;';
           expect(() => { gnirts.mangle(str); }).to.throw('Invalid directive: + \'foo\' $');
         });
@@ -193,7 +194,8 @@ describe('mangle()', () => {
         });
 
         it('should accept unknown string at the left as target', () => {
-          const val = 'foo', val2 = 16,
+          const val = 'foo',
+            val2 = 16,
             str = `if (/* @mangle */${val2}+v1 === '${val2}${val}'/* @/mangle */) {}`;
           common.random.returns(0.99); // Make length of part be 2
 
@@ -206,7 +208,7 @@ describe('mangle()', () => {
           common.random.reset();
         });
 
-        it('should deny \`$\` with accepted one', () => {
+        it('should deny `$` with accepted one', () => {
           const str = 'if (/* @mangle */ + v1 === \'foo\' $ /* @/mangle */) {}';
           expect(() => { gnirts.mangle(str); }).to.throw('Invalid directive: + v1 === \'foo\' $');
         });

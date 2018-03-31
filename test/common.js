@@ -34,7 +34,8 @@ exports.RE_INDEXOF = '\\(\\w+\\)\\.indexOf\\(GETCODE4STRING,[\\d\\-]+\\)===[\\d\
 
 exports.getPattern4match = len => {
   const arrCode = [];
-  let codeRe = false, i;
+  let codeRe = false,
+    i;
   for (i = 0; i < len; i++) {
     arrCode.push((codeRe ? exports.RE_CODERE : exports.RE_INDEXOF)
       .replace(/GETCODE4STRING/,
