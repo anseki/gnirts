@@ -40,7 +40,7 @@ exports.getPattern4match = len => {
     arrCode.push((codeRe ? exports.RE_CODERE : exports.RE_INDEXOF)
       .replace(/GETCODE4STRING/,
         (codeRe ? `(${exports.getPattern4string()}\\+?)+` : // The length is expanded by escapePattern
-          exports.getPattern4string())));
+        exports.getPattern4string())));
     codeRe = !codeRe;
   }
   return `^${arrCode.reverse().join('&&')}$`;
