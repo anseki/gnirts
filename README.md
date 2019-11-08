@@ -95,6 +95,7 @@ TARGET_CODE
 // @/mangle
 ```
 
+Don't put the directive into a comment (i.e. don't make that be nested comment).  
 `TARGET_CODE`s are string literal or condition expression.
 
 The comments in the target code are ignored.
