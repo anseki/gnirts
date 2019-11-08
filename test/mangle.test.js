@@ -71,6 +71,54 @@ describe('mangle()', () => {
       expect(code).to.equal("''");
     });
 
+    it('should not consider `//` in a literal as a comment', () => {
+      common.random.returns(0.99); // Don't call common.random.restore() for other tests
+      const str = '/* @mangle */ "http://example.com/" /* @/mangle */',
+        code = gnirts.mangle(str);
+      expect(common.code2str(code)).to.equal('http://example.com/');
+      common.random.reset();
+
+      // Reset for other tests
+      gnirts.mangle('\x80'); // gnirts#tryR36 = true
+      common.getPattern4string(false); // common#tryR36 = true
+    });
+
+    it('should not consider `/*...*/` in a literal as a comment', () => {
+      common.random.returns(0.99); // Don't call common.random.restore() for other tests
+      const str = '/* @mangle */ "STR1/*STR2" + "STR3*/STR4" /* @/mangle */',
+        code = gnirts.mangle(str);
+      expect(common.code2str(code)).to.equal('STR1/*STR2STR3*/STR4');
+      common.random.reset();
+
+      // Reset for other tests
+      gnirts.mangle('\x80'); // gnirts#tryR36 = true
+      common.getPattern4string(false); // common#tryR36 = true
+    });
+
+    it('should ignore literal in `//` comment', () => {
+      common.random.returns(0.99); // Don't call common.random.restore() for other tests
+      const str = `/*@mangle*/${LF}"STR1" +${LF}//CMT "STR2" +${LF}"STR3" +${LF}//CMT 'STR4' +${LF}'STR5'/*@/mangle*/`,
+        code = gnirts.mangle(str);
+      expect(common.code2str(code)).to.equal('STR1STR3STR5');
+      common.random.reset();
+
+      // Reset for other tests
+      gnirts.mangle('\x80'); // gnirts#tryR36 = true
+      common.getPattern4string(false); // common#tryR36 = true
+    });
+
+    it('should ignore literal in `/*...*/` comment', () => {
+      common.random.returns(0.99); // Don't call common.random.restore() for other tests
+      const str = '/*@mangle*/"STR1" + /*CMT "STR2" +*/"STR3" + /*CMT \'STR4\' +*/\'STR5\'/*@/mangle*/',
+        code = gnirts.mangle(str);
+      expect(common.code2str(code)).to.equal('STR1STR3STR5');
+      common.random.reset();
+
+      // Reset for other tests
+      gnirts.mangle('\x80'); // gnirts#tryR36 = true
+      common.getPattern4string(false); // common#tryR36 = true
+    });
+
     describe('copied conjunctions', () => {
 
       describe('in the literal', () => {
