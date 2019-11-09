@@ -72,51 +72,35 @@ describe('mangle()', () => {
     });
 
     it('should not consider `//` in a literal as a comment', () => {
-      common.random.returns(0.99); // Don't call common.random.restore() for other tests
+      common.random.restore();
       const str = '/* @mangle */ "http://example.com/" /* @/mangle */',
         code = gnirts.mangle(str);
       expect(common.code2str(code)).to.equal('http://example.com/');
       common.random.reset();
-
-      // Reset for other tests
-      gnirts.mangle('\x80'); // gnirts#tryR36 = true
-      common.getPattern4string(false); // common#tryR36 = true
     });
 
     it('should not consider `/*...*/` in a literal as a comment', () => {
-      common.random.returns(0.99); // Don't call common.random.restore() for other tests
+      common.random.restore();
       const str = '/* @mangle */ "STR1/*STR2" + "STR3*/STR4" /* @/mangle */',
         code = gnirts.mangle(str);
       expect(common.code2str(code)).to.equal('STR1/*STR2STR3*/STR4');
       common.random.reset();
-
-      // Reset for other tests
-      gnirts.mangle('\x80'); // gnirts#tryR36 = true
-      common.getPattern4string(false); // common#tryR36 = true
     });
 
     it('should ignore literal in `//` comment', () => {
-      common.random.returns(0.99); // Don't call common.random.restore() for other tests
+      common.random.restore();
       const str = `/*@mangle*/${LF}"STR1" +${LF}//CMT "STR2" +${LF}"STR3" +${LF}//CMT 'STR4' +${LF}'STR5'/*@/mangle*/`,
         code = gnirts.mangle(str);
       expect(common.code2str(code)).to.equal('STR1STR3STR5');
       common.random.reset();
-
-      // Reset for other tests
-      gnirts.mangle('\x80'); // gnirts#tryR36 = true
-      common.getPattern4string(false); // common#tryR36 = true
     });
 
     it('should ignore literal in `/*...*/` comment', () => {
-      common.random.returns(0.99); // Don't call common.random.restore() for other tests
+      common.random.restore();
       const str = '/*@mangle*/"STR1" + /*CMT "STR2" +*/"STR3" + /*CMT \'STR4\' +*/\'STR5\'/*@/mangle*/',
         code = gnirts.mangle(str);
       expect(common.code2str(code)).to.equal('STR1STR3STR5');
       common.random.reset();
-
-      // Reset for other tests
-      gnirts.mangle('\x80'); // gnirts#tryR36 = true
-      common.getPattern4string(false); // common#tryR36 = true
     });
 
     describe('copied conjunctions', () => {
@@ -129,6 +113,7 @@ describe('mangle()', () => {
             const val = 'foo',
               str = `v1 = /* @mangle */${cnj}'${val}'/* @/mangle */;`;
             common.random.returns(0.99); // Make length of part be 2
+            common.fixTryR36();
 
             const code = gnirts.mangle(str),
               escCnj = escapePattern(cnj);
@@ -146,6 +131,7 @@ describe('mangle()', () => {
             const val = 'foo',
               str = `v1 = /* @mangle */ ${cnj}'${val}'/* @/mangle */;`;
             common.random.returns(0.99); // Make length of part be 2
+            common.fixTryR36();
 
             const code = gnirts.mangle(str),
               escCnj = escapePattern(cnj);
@@ -163,6 +149,7 @@ describe('mangle()', () => {
             const val = 'foo',
               str = `v1 = /* @mangle */ ${cnj}  '${val}'  ${cnj}   /* @/mangle */;`;
             common.random.returns(0.99); // Make length of part be 2
+            common.fixTryR36();
 
             const code = gnirts.mangle(str),
               escCnj = escapePattern(cnj);
@@ -272,6 +259,7 @@ describe('mangle()', () => {
       const val = 'foo',
         str = `v1 = /* @mangle */ '${val}' /* @/mangle */;`;
       common.random.returns(0.99); // Make length of part be 2
+      common.fixTryR36();
 
       const code = gnirts.mangle(str);
       // 3 part
@@ -316,15 +304,10 @@ describe('mangle()', () => {
       });
 
       it('should split the string and compare each part, length: 1', () => {
-        // Fix state of common#tryR36
-        common.random.returns(0);
-        if (!(new RegExp(`^${common.getPattern4string()}$`)).test(gnirts.getCode('a'))) {
-          common.getPattern4string(); // Toggle
-        }
-
         const val = 'abc',
           str = `/* @mangle */ v1 === '${val}'/* @/mangle */`;
         common.random.returns(0); // Make length of part be 1
+        common.fixTryR36();
 
         const code = gnirts.mangle(str),
           pattern = common.getPattern4match(3); // 3 parts

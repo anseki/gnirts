@@ -23,14 +23,9 @@ describe('getCode() --> getCode4string()', () => {
   });
 
   it('should split the string and convert each part, length: 1', () => {
-    // Fix state of common#tryR36
-    common.random.returns(0);
-    if (!(new RegExp(`^${common.getPattern4string()}$`)).test(gnirts.getCode('a'))) {
-      common.getPattern4string(); // Toggle
-    }
-
     const str = 'abc';
     common.random.returns(0); // Make length of part be 1
+    common.fixTryR36();
 
     const code = gnirts.getCode(str);
     // 3 parts
@@ -45,6 +40,7 @@ describe('getCode() --> getCode4string()', () => {
   it('should split the string and convert each part, length: 4', () => {
     const str = 'abcdefghi';
     common.random.returns(0.99); // Make length of part be 4
+    common.fixTryR36();
 
     const code = gnirts.getCode(str);
     // 3 parts
@@ -59,6 +55,7 @@ describe('getCode() --> getCode4string()', () => {
   it('should not use R36 for Non-Ascii character', () => {
     const str = 'a\uD83D\uDE4D'; // `a` + Emoji
     common.random.returns(0); // Make length of part be 1
+    common.fixTryR36();
 
     const code = gnirts.getCode(str);
     // 3 part
@@ -73,6 +70,7 @@ describe('getCode() --> getCode4string()', () => {
   it('should use R36 with offset for specific character', () => {
     const str = 'a$$';
     common.random.returns(0); // Make length of part be 1
+    common.fixTryR36();
 
     const code = gnirts.getCode(str);
     // 3 part
@@ -87,6 +85,7 @@ describe('getCode() --> getCode4string()', () => {
   it('should use R36 with leading-zeros for specific character', () => {
     const str = '0000';
     common.random.returns(0.99); // Make length of part be 2
+    common.fixTryR36();
 
     const code = gnirts.getCode(str);
     // 2 part

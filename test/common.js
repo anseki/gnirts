@@ -1,7 +1,8 @@
 'use strict';
 
 const sinon = require('sinon'),
-  random = sinon.stub(Math, 'random').returns(0.5);
+  random = sinon.stub(Math, 'random').returns(0.5),
+  gnirts = require('../lib/gnirts');
 
 let tryR36 = false;
 
@@ -26,6 +27,14 @@ exports.getPattern4string = forceTryR36 => {
   const res = tryR36 ? exports.RE_R36 : exports.RE_CHARCODE;
   tryR36 = !tryR36;
   return res;
+};
+
+// Fix state of common#tryR36 for gnirts#tryR36
+// After stub.returns() (common.random.returns()) was called
+exports.fixTryR36 = () => {
+  if (!(new RegExp(`^${exports.getPattern4string()}$`)).test(gnirts.getCode('a'))) {
+    tryR36 = !tryR36; // Toggle
+  }
 };
 
 // Consider `target` `\w+`

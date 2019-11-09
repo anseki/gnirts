@@ -95,7 +95,6 @@ TARGET_CODE
 // @/mangle
 ```
 
-Don't put the directive into a comment (i.e. don't make that be nested comment).  
 `TARGET_CODE`s are string literal or condition expression.
 
 The comments in the target code are ignored.
@@ -112,6 +111,8 @@ The comments in the target code are ignored.
 ' sesame'
 // @/mangle
 ```
+
+Don't put a directive into a comment (i.e. don't make that be nested comment).
 
 The target code in the directive are replaced to obfuscated codes.  
 The replaced code differs depending on the inside code of the directive:
@@ -194,7 +195,7 @@ var message =
 
 ## Installation
 
-```shell
+```console
 npm install gnirts
 ```
 
