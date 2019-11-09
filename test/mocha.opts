@@ -1,2 +1,3 @@
+./test/functions.test.js
 ./test/getCode.test.js
 ./test/mangle.test.js
