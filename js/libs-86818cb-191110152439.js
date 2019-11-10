@@ -1,8 +1,9 @@
+// gnirts@1.1.7
 /*
  * gnirts
  * https://github.com/anseki/gnirts
  *
- * Copyright (c) 2018 anseki
+ * Copyright (c) 2019 anseki
  * Licensed under the MIT license.
  */
 
@@ -17,7 +18,7 @@ var MAX_LEN_R36 = 10, // i.e. (Number.MAX_SAFE_INTEGER).toString(36).length - 1
     {pattern: '[\\x7b-\\x7f]', offset: 26}
   ],
   TPL_CHARCODE =
-/*
+  /*
 (function() {
   var args = Array.prototype.slice.call(arguments),
     shift1 = args.shift();
@@ -25,15 +26,15 @@ var MAX_LEN_R36 = 10, // i.e. (Number.MAX_SAFE_INTEGER).toString(36).length - 1
     return String.fromCharCode(charCode - shift1 - shift2 - i);
   }).join('');
 })()
-*/
+  */
   '(function(){var @ID1@=Array.prototype.slice.call(arguments),@ID2@=@ID1@.shift();' +
     'return @ID1@.reverse().map(function(@ID3@,@ID4@){' +
     'return String.fromCharCode(@ID3@-@ID2@-@SHIFT2@-@ID4@)}).join(\'\')})(@ARGS@)',
-/*
+  /*
 .split('').map(function(char) {
   return String.fromCharCode(char.charCodeAt() + (@OFFSET@));
 }).join('')
-*/
+  */
   TPL_OFFSET = '.split(\'\').map(function(@ID1@){' +
     'return String.fromCharCode(@ID1@.charCodeAt()+(@OFFSET@))}).join(\'\')',
 
@@ -61,13 +62,16 @@ function escapePattern(pattern) {
 
 function getCode4string(str, tryCompact) {
   var reNonAscii = /[^\x00-\x7f]/, // eslint-disable-line no-control-regex
-    maxLen, strPart, partLen, arrCode = [];
+    arrCode = [],
+    maxLen, strPart, partLen;
 
   function getCodeWithCharCode(str) {
     var shift1 = Math.floor(Math.random() * 64), // 0..65
       shift2 = Math.floor(Math.random() * 64), // 0..65
-      index = str.length, args = [],
-      code = TPL_CHARCODE, idPicker = getIdPicker();
+      index = str.length,
+      args = [],
+      code = TPL_CHARCODE,
+      idPicker = getIdPicker();
 
     while ((--index) > -1) {
       args.push(str.charCodeAt(index) + shift1 + shift2 + index);
@@ -80,7 +84,8 @@ function getCode4string(str, tryCompact) {
   }
 
   function getCodeWithR36(str) {
-    var matches, arrCode = [];
+    var arrCode = [],
+      matches;
 
     function getCodeWithR36Unit(str) {
       var leadingZeros = '';
@@ -148,7 +153,10 @@ function getCode4string(str, tryCompact) {
 }
 
 function getCode4match(target, str) {
-  var maxLen, partLen, codeRe = false, index = 0, arrCode = [];
+  var codeRe = false,
+    index = 0,
+    arrCode = [],
+    maxLen, partLen;
   target += '';
   str += '';
   if (!str) { return target + '===\'\''; }
@@ -156,8 +164,8 @@ function getCode4match(target, str) {
 
   while (index < str.length) {
     partLen = Math.floor(Math.random() * Math.min(maxLen, str.length)) + 1;
-    arrCode.push(codeRe ?
-      '(new RegExp(\'^[^]{' + index + '}\'+' +
+    arrCode.push(codeRe
+      ? '(new RegExp(\'^[^]{' + index + '}\'+' +
         getCode4string(escapePattern(str.substr(index, partLen)), true) +
         ')).test(' + target + ')' :
       '(' + target + ').indexOf(' +
@@ -208,21 +216,69 @@ exports.mangle = function(source) {
     return code;
   }
 
+  // [removeComments]
+  function removeComments(code) {
+    // Emulate lookbehind pattern of RegExp. e.g. (?<=...)
+    // [2015-11-20] RegExp lookbehind https://codereview.chromium.org/1418963009
+    // [lbIndexOf]
+    function lbIndexOf(str, searchChr, escapeChr) {
+      var fromIndex = 0,
+        index = -1,
+        maxIndex = str.length - 1;
+      while (fromIndex <= maxIndex) {
+        index = str.indexOf(searchChr, fromIndex);
+        if (index <= 0 || str.substring(index - 1, index) !== escapeChr) { break; }
+        fromIndex = index + 1;
+        index = -1; // Not found because that is escaped
+      }
+      return index;
+    }
+    // [/lbIndexOf]
+
+    var re = /^([^]*?)("|'|\/\/|\/\*)([^]*)$/,
+      cleanCode = '',
+      matches, index;
+    while (code.length) {
+      if ((matches = re.exec(code))) {
+        cleanCode += matches[1];
+        if (matches[2] === '"' || matches[2] === '\'') { // ==== Quot
+          cleanCode += matches[2];
+          code = matches[3];
+          if ((index = lbIndexOf(code, matches[2], '\\')) === -1) {
+            cleanCode += code;
+            code = '';
+          } else {
+            cleanCode += code.substring(0, index + 1);
+            code = code.substring(index + 1);
+          }
+        } else if (matches[2] === '//') { // ==== Comment //
+          code = matches[3].replace(/^[^]*?(?:\r?\n|$)/, ' ');
+        } else if (matches[2] === '/*') { // ==== Comment /*...*/
+          code = matches[3].replace(/^[^]*?(?:\*\/|$)/, ' ');
+        }
+      } else {
+        cleanCode += code;
+        code = '';
+      }
+    }
+    return cleanCode;
+  }
+  // [/removeComments]
+
   return source.replace(reDir, function(s, content) {
     var matches, code;
-    content = content.replace(/\/\*[^]*?\*\//g, '').replace(/\/\/.*/g, '');
-    if ((matches = reLiteral.exec(content))) {        // ======== Literal
+    content = removeComments(content);
+    if ((matches = reLiteral.exec(content))) { // ============= Literal
       // matches 1:left-CNJ, 2:QUOT-string, 3:right-CNJ
       return (matches[1] || '') +
         getCode4string(getStringFromCode(matches[2])) + (matches[3] || '');
-    } else if ((matches = reMatch.exec(content))) {   // ======== Match
+    } else if ((matches = reMatch.exec(content))) { // ======== Match
       // matches 1:left-CNJ, 2:target, 3:comparison-OP, 4:QUOT-string, 5:right-CNJ
       code = getCode4match(matches[2], getStringFromCode(matches[4]));
       if (matches[3].substr(0, 1) === '!') { code = '!(' + code + ')'; }
       return (matches[1] || '') + code + (matches[5] || '');
-    } else {
-      throw new Error('Invalid directive: ' + content);
     }
+    throw new Error('Invalid directive: ' + content);
   });
 };
 
