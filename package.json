@@ -23,7 +23,7 @@
     "node": ">= 0.8.0"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.3.4",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "pre-proc": "^1.0.2",
