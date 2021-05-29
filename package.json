@@ -24,9 +24,9 @@
   },
   "devDependencies": {
     "chai": "^4.3.4",
-    "mocha": "^5.2.0",
+    "mocha": "^8.4.0",
     "pre-proc": "^1.0.2",
-    "sinon": "^6.0.0"
+    "sinon": "^11.1.1"
   },
   "scripts": {
     "test": "mocha"
