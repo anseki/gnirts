@@ -24,14 +24,12 @@
   },
   "devDependencies": {
     "chai": "^4.3.4",
-    "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "pre-proc": "^1.0.2",
     "sinon": "^6.0.0"
   },
   "scripts": {
-    "test": "mocha",
-    "cover": "istanbul cover node_modules/mocha/bin/_mocha"
+    "test": "mocha"
   },
   "homepage": "https://github.com/anseki/gnirts",
   "repository": {
