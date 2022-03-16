@@ -1,10 +1,11 @@
-#ex-010 p {
+#ex-010 {
   text-align: center;
 }
 #ex-010 p:first-of-type {
   font-weight: bold;
 }
 #ex-010 textarea {
+  box-sizing: border-box;
   width: 360px;
   height: 240px;
   white-space: pre-line;
