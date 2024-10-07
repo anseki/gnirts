@@ -52,6 +52,7 @@ exports.getPattern4match = len => {
         exports.getPattern4string())));
     codeRe = !codeRe;
   }
+  arrCode.push('\\(\\w+\\)\\.length===\\d+');
   return `^${arrCode.reverse().join('&&')}$`;
 };
 

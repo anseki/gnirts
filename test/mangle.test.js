@@ -293,11 +293,138 @@ describe('mangle()', () => {
         [0, 0.99].forEach(caseRandom => {
           it(`should cover ${testCase.title}, random: ${caseRandom}`, () => {
             common.random.returns(caseRandom);
-            const str = `/* @mangle */ v1 === '${escapePattern(testCase.value)}'/* @/mangle */`,
-              code = gnirts.mangle(str);
+            const escapedValue = escapePattern(testCase.value);
+            let str,
+              code;
+
+            // Condition expression `===`
+            str = `/* @mangle */ v1 === '${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
             expect(code).to.not.equal(str);
             expect(common.code2str(
-              `(()=>{var v1='${escapePattern(testCase.value)}';return ${code};})()`)).to.be.true;
+              `(()=>{var v1='${escapedValue}';return ${code};})()`)).to.be.true;
+
+            // Condition expression `!==`
+            str = `/* @mangle */ v1 !== '${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapedValue}';return ${code};})()`)).to.be.false;
+
+            common.random.reset();
+          });
+
+          it(`should cover ${testCase.title}, random: ${caseRandom}, with invalid chars in mangle target`, () => {
+            common.random.returns(caseRandom);
+            const escapedValue = escapePattern(testCase.value);
+            let str,
+              code;
+
+            // ---- Left
+
+            // Condition expression `===`
+            str = `/* @mangle */ v1 === 'XXX${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapedValue}';return ${code};})()`)).to.be.false;
+
+            // Condition expression `!==`
+            str = `/* @mangle */ v1 !== 'XXX${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapedValue}';return ${code};})()`)).to.be.true;
+
+            // ---- Right
+
+            // Condition expression `===`
+            str = `/* @mangle */ v1 === '${escapedValue}XXX'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapedValue}';return ${code};})()`)).to.be.false;
+
+            // Condition expression `!==`
+            str = `/* @mangle */ v1 !== '${escapedValue}XXX'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapedValue}';return ${code};})()`)).to.be.true;
+
+            // ---- Both
+
+            // Condition expression `===`
+            str = `/* @mangle */ v1 === 'XXX${escapedValue}XXX'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapedValue}';return ${code};})()`)).to.be.false;
+
+            // Condition expression `!==`
+            str = `/* @mangle */ v1 !== 'XXX${escapedValue}XXX'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapedValue}';return ${code};})()`)).to.be.true;
+
+            common.random.reset();
+          });
+
+          it(`should cover ${testCase.title}, random: ${caseRandom}, with invalid chars in variable`, () => {
+            common.random.returns(caseRandom);
+            const escapedValue = escapePattern(testCase.value);
+            let str,
+              code;
+
+            // ---- Left
+
+            // Condition expression `===`
+            str = `/* @mangle */ v1 === '${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='XXX${escapedValue}';return ${code};})()`)).to.be.false;
+
+            // Condition expression `!==`
+            str = `/* @mangle */ v1 !== '${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='XXX${escapedValue}';return ${code};})()`)).to.be.true;
+
+            // ---- Right
+
+            // Condition expression `===`
+            str = `/* @mangle */ v1 === '${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapedValue}XXX';return ${code};})()`)).to.be.false;
+
+            // Condition expression `!==`
+            str = `/* @mangle */ v1 !== '${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='${escapedValue}XXX';return ${code};})()`)).to.be.true;
+
+            // ---- Both
+
+            // Condition expression `===`
+            str = `/* @mangle */ v1 === '${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='XXX${escapedValue}XXX';return ${code};})()`)).to.be.false;
+
+            // Condition expression `!==`
+            str = `/* @mangle */ v1 !== '${escapedValue}'/* @/mangle */`;
+            code = gnirts.mangle(str);
+            expect(code).to.not.equal(str);
+            expect(common.code2str(
+              `(()=>{var v1='XXX${escapedValue}XXX';return ${code};})()`)).to.be.true;
+
             common.random.reset();
           });
         });
